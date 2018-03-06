@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection;
 
 public partial class P3D_Main
 {
@@ -21,6 +22,9 @@ public partial class P3D_Main
 	[SerializeField]
 	private bool showBrush = true;
 
+
+	[SerializeField]
+	private Texture[] images;
 	private void DrawBrush()
 	{
 		EditorGUILayout.Separator();
@@ -39,7 +43,7 @@ public partial class P3D_Main
 
 				currentBrush.Size = EditorGUILayout.Vector2Field("Size", currentBrush.Size);
 
-				//currentBrush.Blend = (P3D_BlendMode)EditorGUI.IntPopup(P3D_Helper.Reserve(), "Blend", (int)currentBrush.Blend, toolNames, toolValues);
+				currentBrush.Blend = (P3D_BlendMode)EditorGUI.IntPopup(P3D_Helper.Reserve(), "Blend", (int)currentBrush.Blend, toolNames, toolValues);
 
 				//if (string.IsNullOrEmpty(currentTexEnvName) == false)
 				//{
@@ -63,58 +67,54 @@ public partial class P3D_Main
 
 				EditorGUILayout.Separator();
 
-				DrawColor();
-				DrawShapeSize();
-				DrawDetailAndTiling();
+				switch (currentBrush.Blend)
+				{
+					case P3D_BlendMode.AlphaBlend:
+						{
+							DrawColor();
+							DrawShapeSize();
+							//DrawDetailAndTiling();
+						}
+						break;
 
-				//switch (currentBrush.Blend)
-				//{
-				//	case P3D_BlendMode.AlphaBlend:
-				//	{
-				//		DrawColor();
-				//		DrawShapeSize();
-				//		DrawDetailAndTiling();
-				//	}
-				//	break;
+					case P3D_BlendMode.AlphaBlendRgb:
+						{
+							DrawColor();
+							DrawShapeSize();
+							//DrawDetailAndTiling();
+						}
+						break;
 
-				//	case P3D_BlendMode.AlphaBlendRgb:
-				//	{
-				//		DrawColor();
-				//		DrawShapeSize();
-				//		DrawDetailAndTiling();
-				//	}
-				//	break;
+					case P3D_BlendMode.AlphaErase:
+						{
+							DrawShapeSize();
+							DrawDetailAndTiling();
+						}
+						break;
 
-				//	case P3D_BlendMode.AlphaErase:
-				//	{
-				//		DrawShapeSize();
-				//		DrawDetailAndTiling();
-				//	}
-				//	break;
+					case P3D_BlendMode.AdditiveBlend:
+						{
+							DrawColor();
+							DrawShapeSize();
+						}
+						break;
 
-				//	case P3D_BlendMode.AdditiveBlend:
-				//	{
-				//		DrawColor();
-				//		DrawShapeSize();
-				//	}
-				//	break;
+					case P3D_BlendMode.SubtractiveBlend:
+						{
+							DrawColor();
+							DrawShapeSize();
+							//DrawDetailAndTiling();
+						}
+						break;
 
-				//	case P3D_BlendMode.SubtractiveBlend:
-				//	{
-				//		DrawColor();
-				//		DrawShapeSize();
-				//		DrawDetailAndTiling();
-				//	}
-				//	break;
-
-				//	case P3D_BlendMode.NormalBlend:
-				//	{
-				//		DrawDirection();
-				//		DrawShapeSize();
-				//		DrawDetailAndTiling();
-				//	}
-				//	break;
-				//}
+					case P3D_BlendMode.NormalBlend:
+						{
+							DrawDirection();
+							DrawShapeSize();
+							//DrawDetailAndTiling();
+						}
+						break;
+				}
 
 				DrawSaveBrush();
 			}
@@ -165,23 +165,44 @@ public partial class P3D_Main
 	private Texture2D tempTex;
 	private void DrawColor()
 	{
-		currentBrush.Color = EditorGUILayout.ColorField("Color", currentBrush.Color);
+		//ColorField(GUIContent label, Color value, bool showEyedropper, bool showAlpha, bool hdr, ColorPickerHDRConfig hdrConfig, params GUILayoutOption[] options);
+		currentBrush.Color = EditorGUILayout.ColorField(new GUIContent("Color"), currentBrush.Color,false,false,false,new ColorPickerHDRConfig(1,1,1,1));
 
-		var curCam = SceneView.currentDrawingSceneView.camera;
-		//var rect = curCam.pixelRect;
-		//RenderTexture.active = curCam.activeTexture;
-		//if (tempTex == null)
-		//tempTex = new Texture2D((int)rect.width,(int)rect.height);
-		//tempTex.ReadPixels(rect,0,0);
-		//var color = tempTex.GetPixel(5, 5);
-		//currentBrush.Color = color;
 	}
-	
+	[SerializeField]
+	public int shapeSelected = 0;
+	private Vector2 _ScrollWheel;
 	private void DrawShapeSize()
 	{
 		EditorGUILayout.Separator();
 
-		currentBrush.Shape = (Texture2D)EditorGUI.ObjectField(P3D_Helper.Reserve(), "Shape", currentBrush.Shape, typeof(Texture2D), true);
+		images = Resources.LoadAll<Texture>("Shapes");
+
+		GUILayout.BeginHorizontal();
+		GUILayout.Space(20);
+		GUILayout.Label("Shape");
+		GUILayout.FlexibleSpace();
+
+		_ScrollWheel = EditorGUILayout.BeginScrollView(_ScrollWheel,true,false,GUILayout.Height(100));
+		GUILayout.BeginHorizontal("box", GUILayout.Width(318));
+		Color oldCol = GUI.color;
+		for(int i =0;i<images.Length;i++)
+		{
+			GUI.color = i == shapeSelected ? Color.green : oldCol;
+			if(GUILayout.Button(images[i],GUILayout.Width(60),GUILayout.Height(60)))
+			{ 
+				shapeSelected = i;
+				EditorGUIUtility.PingObject(images[shapeSelected]);
+			}
+		}
+		GUILayout.EndHorizontal();
+		EditorGUILayout.EndScrollView();
+
+		GUILayout.EndHorizontal();
+
+		currentBrush.Shape = images[shapeSelected] as Texture2D;
+		//currentBrush.Shape = (Texture2D)EditorGUI.ObjectField(P3D_Helper.Reserve(), "Shape", currentBrush.Shape, typeof(Texture2D), true);
+		GUI.color = oldCol;
 	}
 
 	private void DrawDetailAndTiling()
@@ -231,11 +252,12 @@ public partial class P3D_Main
 
 	public void Paint(Vector3 startPosition, Vector3 endPosition)
 	{
+		
 		if (tree.IsReady == true && painter.IsReady == true)
 		{
 			var start = lockedGameObject.transform.InverseTransformPoint(startPosition);
 			var end   = lockedGameObject.transform.InverseTransformPoint(  endPosition);
-
+			
 			if (passThrough == true)
 			{
 				var results = tree.FindBetweenAll(start, end);
@@ -252,6 +274,39 @@ public partial class P3D_Main
 				if (result != null)
 				{
 					Paint(result.GetUV(currentCoord));
+				}
+			}
+		}
+	}
+	public void PickColor(Vector3 startPosition, Vector3 endPosition)
+	{
+		if (tree.IsReady == true && painter.IsReady == true)
+		{
+			var start = lockedGameObject.transform.InverseTransformPoint(startPosition);
+			var end = lockedGameObject.transform.InverseTransformPoint(endPosition);
+
+			if (passThrough == true)
+			{
+				var results = tree.FindBetweenAll(start, end);
+
+				for (var i = results.Count - 1; i >= 0; i--)
+				{
+					Paint(results[i].GetUV(currentCoord));
+				}
+			}
+			else
+			{
+				var result = tree.FindBetweenNearest(start, end);
+
+				if (result != null)
+				{
+					if (colorPickerWindowIsOpened)
+					{
+						var uv = result.GetUV(currentCoord);
+						uv.x = uv.x * CurrentTiling.x + CurrentOffset.x;
+						uv.y = uv.y * CurrentTiling.y + CurrentOffset.y;
+						currentBrush.Color = currentTexture.GetPixelBilinear(uv.x, uv.y);
+					}
 				}
 			}
 		}

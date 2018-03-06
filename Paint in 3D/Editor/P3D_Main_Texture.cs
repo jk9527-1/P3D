@@ -1,4 +1,4 @@
- using UnityEngine;
+﻿ using UnityEngine;
 using UnityEditor;
 using System.Collections.Generic;
 
@@ -30,7 +30,7 @@ public partial class P3D_Main
 
 			BeginGroup(ref showTexture, "Texture"); if (showTexture == true)
 			{
-				currentTexEnvIndex = EditorGUILayout.Popup(currentTexEnvIndex, texEnvNames);
+				//currentTexEnvIndex = EditorGUILayout.Popup(currentTexEnvIndex, texEnvNames);
 				currentTexEnvName  = P3D_Helper.GetIndexOrDefault(texEnvNames, currentTexEnvIndex);
 				
 				UpdateState();
@@ -43,44 +43,45 @@ public partial class P3D_Main
 
 				if (currentTexture == null)
 				{
-					DrawCreateTexture();
+					//DrawCreateTexture();
+					EditorGUILayout.HelpBox("该物体没有lightmap", MessageType.Error);
 				}
 				else
 				{
-					if (currentTexture.hideFlags == HideFlags.None)
-					{
+					//if (currentTexture.hideFlags == HideFlags.None)
+					//{
 						if (P3D_Helper.IsWritableFormat(currentTexture.format) == true)
 						{
-							if (P3D_Helper.IsAsset(currentTexture) == true)
-							{
-								var path = AssetDatabase.GetAssetPath(currentTexture);
+							//if (P3D_Helper.IsAsset(currentTexture) == true)
+							//{
+							//	var path = AssetDatabase.GetAssetPath(currentTexture);
 
-								// Directly writable Texture2D?
-								if (path.EndsWith(".asset") == true)
-								{
-									DrawDuplicateTexture();
-								}
-								// png/psd/etc?
-								else
-								{
-									DrawDuplicateTexture("This texture asset isn't directly writable, duplicate it to convert it to a writable format");
-								}
-							}
-							else
-							{
-								DrawDuplicateTexture();
+							//	// Directly writable Texture2D?
+							//	if (path.EndsWith(".asset") == true)
+							//	{
+							//		DrawDuplicateTexture();
+							//	}
+							//	// png/psd/etc?
+							//	else
+							//	{
+							//		DrawDuplicateTexture("This texture asset isn't directly writable, duplicate it to convert it to a writable format");
+							//	}
+							//}
+							//else
+							//{
+							//	DrawDuplicateTexture();
 
-								// Both in scene?
-								if (P3D_Helper.IsAsset(currentMaterial) == false)
-								{
-									DrawSaveTexture();
-								}
-								// Texture in scene, but material in asset?
-								else
-								{
-									DrawSaveTexture("This texture isn't an asset, but it belongs to a material which is an asset, so you must save the texture to prevent data loss");
-								}
-							}
+							//	// Both in scene?
+							//	if (P3D_Helper.IsAsset(currentMaterial) == false)
+							//	{
+							//		DrawSaveTexture();
+							//	}
+							//	// Texture in scene, but material in asset?
+							//	else
+							//	{
+							//		DrawSaveTexture("This texture isn't an asset, but it belongs to a material which is an asset, so you must save the texture to prevent data loss");
+							//	}
+							//}
 
 							DrawExportTexture();
 						}
@@ -88,12 +89,13 @@ public partial class P3D_Main
 						{
 							DrawDuplicateTexture("This texture's format (" + currentTexture.format + ") isn't directly writable, duplicate it to convert it to a writable format");
 						}
-					}
+					//}
 					// Bad hide flags?
-					else
-					{
-						DrawDuplicateTexture("This texture's hideFlags indicate it shouldn't be modified, duplicate it to fix this");
-					}
+					//else
+					//{
+					//	//currentTexture.hideFlags = HideFlags.None;
+					//	DrawDuplicateTexture("This texture's hideFlags indicate it shouldn't be modified, duplicate it to fix this");
+					//}
 				}
 			}
 			EndGroup();
@@ -206,20 +208,20 @@ public partial class P3D_Main
 	{
 		if (Button("Export") == true)
 		{
-			var path = P3D_Helper.SaveDialog("Export Texture", "Assets", currentTexture.name, "png");
+			var path = P3D_Helper.SaveDialog("Export Texture", "Assets", currentTexture.name, "exr");
 
 			if (string.IsNullOrEmpty(path) == false)
 			{
 				P3D_Helper.SaveTextureAsset(currentTexture, path, true);
 
-				var newTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D));
+				//var newTexture = (Texture2D)AssetDatabase.LoadAssetAtPath(path, typeof(Texture2D));
 
 				if (newTexture != null)
 				{
 					ClearUndo();
 
-					currentTexture = newTexture;
-					currentMaterial.SetTexture(currentTexEnvName, newTexture);
+					//currentTexture = newTexture;
+					//currentMaterial.SetTexture(currentTexEnvName, newTexture);
 
 					P3D_Helper.SetDirty(this);
 				}

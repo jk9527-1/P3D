@@ -97,47 +97,47 @@ public class P3D_TexturePreview : MonoBehaviour
 		if (target != null)
 		{
 			if (meshRenderer == null) meshRenderer = gameObject.AddComponent<MeshRenderer>();
-			if (meshFilter   == null) meshFilter   = gameObject.AddComponent<MeshFilter>();
-			if (material     == null) material     = new Material(Shader.Find("Hidden/P3D_TexturePreview"));
-			
-			transform.position   = target.position;
-			transform.rotation   = target.rotation;
+			if (meshFilter == null) meshFilter = gameObject.AddComponent<MeshFilter>();
+			if (material == null) material = new Material(Shader.Find("Hidden/P3D_TexturePreview"));
+
+			transform.position = target.position;
+			transform.rotation = target.rotation;
 			transform.localScale = target.lossyScale;
-			
+
 			material.hideFlags = HideFlags.HideAndDontSave;
-			
+
 			material.SetMatrix("_Matrix", target.localToWorldMatrix);
 			material.SetTexture("_Texture", texture);
 			material.SetColor("_Tint", new Color(1.0f, 1.0f, 1.0f, opacity));
 			material.SetTextureScale("_Texture", tiling);
 			material.SetTextureOffset("_Texture", offset);
-			
+
 			var tintColor = Color.white;
 			var baseColor = Color.clear;
 			var opacColor = Color.clear;
-			
+
 			tintColor.a = opacity;
-			
+
 			material.SetColor("_Tint", tintColor);
 			material.SetColor("_Base", baseColor);
 			material.SetColor("_Opac", opacColor);
-			
+
 			if (materials.Length != submeshIndex + 1)
 			{
 				materials = new Material[submeshIndex + 1];
 			}
-			
+
 			for (var i = 0; i < submeshIndex; i++)
 			{
 				materials[i] = P3D_Helper.ClearMaterial;
 			}
-			
+
 			materials[submeshIndex] = material;
-			
+
 			meshRenderer.sharedMaterials = materials;
-			
+
 			meshFilter.sharedMesh = mesh;
-			
+
 			age = 0;
 		}
 	}

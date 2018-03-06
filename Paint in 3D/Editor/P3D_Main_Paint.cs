@@ -5,7 +5,7 @@ using System.Collections.Generic;
 public partial class P3D_Main
 {
 	[SerializeField]
-	private P3D_CoordType currentCoord = P3D_CoordType.UV1;
+	private P3D_CoordType currentCoord = P3D_CoordType.UV2;
 	
 	[SerializeField]
 	private float resolution = 1.0f;
@@ -35,7 +35,8 @@ public partial class P3D_Main
 		{
 			BeginLabelWidth(Mathf.Min(85.0f, position.width * 0.5f));
 			{
-				currentCoord = (P3D_CoordType)GUI.Toolbar(P3D_Helper.Reserve(20.0f, true), (int)currentCoord, coordNames);
+				//currentCoord = (P3D_CoordType)GUI.Toolbar(P3D_Helper.Reserve(20.0f, true), (int)currentCoord, coordNames);
+				currentCoord = P3D_CoordType.UV2;
 				
 				resolution = EditorGUILayout.Slider("Resolution", resolution, 0.0f, 5.0f);
 
@@ -45,7 +46,7 @@ public partial class P3D_Main
 
 				scatterScale = EditorGUILayout.Slider("Scatter Scale", scatterScale, 0.0f, 1.0f);
 
-				passThrough = EditorGUILayout.Toggle("Pass Through", passThrough);
+				//passThrough = EditorGUILayout.Toggle("Pass Through", passThrough);
 			}
 			EndLabelWidth();
 		}

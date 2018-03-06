@@ -94,18 +94,19 @@ public class P3D_BrushPreview : MonoBehaviour
 	
 	private void UpdateShow(Mesh mesh, int submeshIndex, Transform target, float opacity, P3D_Matrix paintMatrix, Vector2 canvasResolution, Texture2D shape, Vector2 tiling, Vector2 offset)
 	{
+		
 		if (target != null)
 		{
 			if (meshRenderer == null) meshRenderer = gameObject.AddComponent<MeshRenderer>();
-			if (meshFilter   == null) meshFilter   = gameObject.AddComponent<MeshFilter>();
-			if (material     == null) material     = new Material(Shader.Find("Hidden/P3D_BrushPreview"));
-			
-			transform.position   = target.position;
-			transform.rotation   = target.rotation;
+			if (meshFilter == null) meshFilter = gameObject.AddComponent<MeshFilter>();
+			if (material == null) material = new Material(Shader.Find("Hidden/P3D_BrushPreview"));
+
+			transform.position = target.position;
+			transform.rotation = target.rotation;
 			transform.localScale = target.lossyScale;
-			
+
 			material.hideFlags = HideFlags.HideAndDontSave;
-			
+
 			material.SetMatrix("_WorldMatrix", target.localToWorldMatrix);
 			material.SetMatrix("_PaintMatrix", paintMatrix.Matrix4x4);
 			material.SetVector("_CanvasResolution", canvasResolution);
@@ -113,23 +114,23 @@ public class P3D_BrushPreview : MonoBehaviour
 			material.SetVector("_Offset", offset);
 			material.SetColor("_Color", new Color(1.0f, 1.0f, 1.0f, opacity));
 			material.SetTexture("_Shape", shape);
-			
+
 			if (materials.Length != submeshIndex + 1)
 			{
 				materials = new Material[submeshIndex + 1];
 			}
-			
+
 			for (var i = 0; i < submeshIndex; i++)
 			{
 				materials[i] = P3D_Helper.ClearMaterial;
 			}
-			
+
 			materials[submeshIndex] = material;
-			
+
 			meshRenderer.sharedMaterials = materials;
-			
+
 			meshFilter.sharedMesh = mesh;
-			
+
 			age = 0;
 		}
 	}

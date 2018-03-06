@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEditor;
 using System.Collections.Generic;
 
 // This is the main painting class, it stores a tree of mesh data (for fast access), and provides methods to raycast and paint into the data
@@ -137,6 +138,7 @@ public class P3D_Painter
 	// This causes the current paint operation to get applied to the specified matrix in pixel space
 	public bool Paint(P3D_Brush brush, P3D_Matrix matrix)
 	{
+
 		if (Canvas != null && brush != null)
 		{
 			brush.Paint(Canvas, matrix);

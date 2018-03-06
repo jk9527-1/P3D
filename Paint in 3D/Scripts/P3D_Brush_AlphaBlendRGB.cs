@@ -23,9 +23,9 @@ public partial class P3D_Brush
 
 						if (shape != null) add *= shape.GetPixelBilinear(shapeCoord.x, shapeCoord.y);
 
-						if (detail != null) add *= SampleRepeat(detail, detailX * x, detailY * y);
-								
-						canvas.SetPixel(x, y, Blend(old, add));
+						//if (detail != null) add *= SampleRepeat(detail, detailX * x, detailY * y);
+
+						canvas.SetPixel(x, y, Blend(old,add));
 					}
 				}
 			}
@@ -39,12 +39,12 @@ public partial class P3D_Brush
 				var add_i = 1.0f - add_a;
 				var old_a = old.a;
 				var old_n = add_a + old_a * add_i;
-			
+
 				old.r = (add.r * add_a + old.r * old_a * add_i) / old_n;
 				old.g = (add.g * add_a + old.g * old_a * add_i) / old_n;
 				old.b = (add.b * add_a + old.b * old_a * add_i) / old_n;
 			}
-		
+
 			return old;
 		}
 	}

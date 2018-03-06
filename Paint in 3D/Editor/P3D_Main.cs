@@ -45,7 +45,7 @@ public partial class P3D_Main : P3D_EditorWindow
 	private Vector2 oldMousePosition;
 
 	[SerializeField]
-	private int maxUndoLevels = 10;
+	private int maxUndoLevels = 30;
 
 	//[SerializeField]
 	private List<P3D_UndoState> undoStates = new List<P3D_UndoState>();
@@ -62,7 +62,7 @@ public partial class P3D_Main : P3D_EditorWindow
 	protected override void OnEnable()
 	{
 		Instance = this;
-
+		minSize = new Vector2(560,750);
 		base.OnEnable();
 
 		SetTitle("Paint in 3D");
@@ -91,6 +91,17 @@ public partial class P3D_Main : P3D_EditorWindow
 
 	protected override void OnInspector()
 	{
+		EditorWindow[] windows = (EditorWindow[])Resources.FindObjectsOfTypeAll(typeof(EditorWindow));
+		colorPickerWindowIsOpened = false;
+		foreach (EditorWindow window in windows)
+		{
+			if (window.GetType().Name == "ColorPicker")
+			{
+				Debug.LogWarning("ColorPicker");
+				colorPickerWindowIsOpened = true;
+				break;
+			}
+		}
 		UpdateLock();
 		UpdateState();
 
@@ -110,7 +121,7 @@ public partial class P3D_Main : P3D_EditorWindow
 			
 			DrawTexture();
 			
-			DrawTilingOffset();
+			//DrawTilingOffset();
 			
 			DrawPaint();
 
@@ -118,7 +129,7 @@ public partial class P3D_Main : P3D_EditorWindow
 
 			DrawPresets();
 
-			//DrawPreview();
+			DrawPreview();
 			
 			DrawTools();
 
@@ -164,10 +175,13 @@ public partial class P3D_Main : P3D_EditorWindow
 				{
 					if (Event.current.type == EventType.MouseDown || Event.current.type == EventType.MouseDrag)
 					{
-						Paint(camera, mousePosition);
+						if (colorPickerWindowIsOpened)
+							PickColor(camera, mousePosition);
+						else
+							Paint(camera, mousePosition);
 					}
 				}
-
+				if (!colorPickerWindowIsOpened)
 				ShowBrushPreview(camera, mousePosition);
 			}
 
@@ -175,8 +189,7 @@ public partial class P3D_Main : P3D_EditorWindow
 			{
 				FinishPaint();
 			}
-
-			ShowTexturePreview();
+			//ShowTexturePreview();
 		}
 	}
 
@@ -360,6 +373,49 @@ public partial class P3D_Main : P3D_EditorWindow
 		}
 	}
 
+	private void PickColor(Camera camera, Vector2 mousePosition)
+	{
+		if (currentTexture != null)
+		{
+			StartRecordUndo();
+
+			var ray = HandleUtility.GUIPointToWorldRay(mousePosition);
+			var rayStart = ray.origin + ray.direction * camera.nearClipPlane;
+			var rayEnd = ray.origin + ray.direction * camera.farClipPlane;
+
+			BeginPaint();
+			{
+				if (oldMouseDown == true)// && currentTool != ToolType.)
+				{
+					// Find how many paint steps we should do between the old mouse position and the new mouse position
+					var steps = Mathf.FloorToInt(Vector2.Distance(mousePosition, oldMousePosition) * resolution + 0.1f);
+
+					// More than one step?
+					if (steps > 0)
+					{
+						var stepsRecip = P3D_Helper.Reciprocal(steps);
+
+						for (var i = 0; i <= steps; i++)
+						{
+							var subRayStart = Vector3.Lerp(oldRayStart, rayStart, i * stepsRecip);
+							var subRayEnd = Vector3.Lerp(oldRayEnd, rayEnd, i * stepsRecip);
+
+							PickColor(subRayStart, subRayEnd);
+						}
+					}
+					else
+					{
+						PickColor(rayStart, rayEnd);
+					}
+				}
+				else
+				{
+					PickColor(rayStart, rayEnd);
+				}
+			}
+			EndPaint();
+		}
+	}
 	private void FinishPaint()
 	{
 		if (oldMouseDown == true)
@@ -391,9 +447,10 @@ public partial class P3D_Main : P3D_EditorWindow
 
 			currentTexEnvName = P3D_Helper.GetIndexOrDefault(texEnvNames, ref currentTexEnvIndex);
 
-			if (string.IsNullOrEmpty(currentTexEnvName) == false)
+			if (LightmapSettings.lightmaps.Length > lockedRenderer.lightmapIndex && lockedRenderer.lightmapIndex > -1)
 			{
-				currentTexture = currentMaterial.GetTexture(currentTexEnvName) as Texture2D;
+				//currentTexture = currentMaterial.GetTexture(currentTexEnvName) as Texture2D;
+				currentTexture = LightmapSettings.lightmaps[lockedRenderer.lightmapIndex].lightmapColor;
 			}
 			else
 			{

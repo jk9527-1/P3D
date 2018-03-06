@@ -19,6 +19,9 @@ public partial class P3D_Main
 	[SerializeField]
 	private bool showPreview;
 
+	[SerializeField]
+	private bool colorPickerWindowIsOpened = false;
+	
 	private void DrawPreview()
 	{
 		EditorGUILayout.Separator();
@@ -27,7 +30,7 @@ public partial class P3D_Main
 		{
 			BeginLabelWidth(Mathf.Min(85.0f, position.width * 0.5f));
 			{
-				previewTextureOpacity = EditorGUILayout.Slider("Texture", previewTextureOpacity, 0.0f, 1.0f);
+				//previewTextureOpacity = EditorGUILayout.Slider("Texture", previewTextureOpacity, 0.0f, 1.0f);
 
 				previewBrushOpacity = EditorGUILayout.Slider("Brush", previewBrushOpacity, 0.0f, 1.0f);
 
@@ -77,23 +80,23 @@ public partial class P3D_Main
 		}
 	}
 
-	private void ShowTexturePreview()
-	{
-		if (currentTexture != null && previewTextureOpacity > 0.0f)
-		{
-			var meshFilter = lockedGameObject.GetComponent<MeshFilter>();
+	//private void ShowTexturePreview()
+	//{
+	//	if (currentTexture != null && previewTextureOpacity > 0.0f)
+	//	{
+	//		var meshFilter = lockedGameObject.GetComponent<MeshFilter>();
 
-			if (meshFilter != null)
-			{
-				var mesh = meshFilter.sharedMesh;
+	//		if (meshFilter != null)
+	//		{
+	//			var mesh = meshFilter.sharedMesh;
 
-				if (mesh != null)
-				{
-					P3D_TexturePreview.Show(mesh, currentMaterialIndex, lockedGameObject.transform, previewTextureOpacity, currentTexture, CurrentTiling, CurrentOffset);
-				}
-			}
-		}
-	}
+	//			if (mesh != null)
+	//			{
+	//				P3D_TexturePreview.Show(mesh, currentMaterialIndex, lockedGameObject.transform, previewTextureOpacity, currentTexture, CurrentTiling, CurrentOffset);
+	//			}
+	//		}
+	//	}
+	//}
 
 	private void ShowBrushPreview(Camera camera, Vector2 mousePosition)
 	{
@@ -132,7 +135,7 @@ public partial class P3D_Main
 	{
 		var width      = currentTexture.width;
 		var height     = currentTexture.height;
-		var uv         = result.GetUV(currentCoord);
+		var uv = result.GetUV(P3D_CoordType.UV1);
 		var xy         = P3D_Helper.CalculatePixelFromCoord(uv, CurrentTiling, CurrentOffset, width, height);
 		var matrix     = P3D_Helper.CreateMatrix(xy + new Vector2(0.01f, 0.01f), currentBrush.Size * 0.999f, currentBrush.Angle).Inverse;
 		var resolution = new Vector2(width, height);

@@ -91,7 +91,7 @@ public partial class P3D_Brush
 
 	[Tooltip("The scale of the detail texture, allowing you to tile it")]
 	public Vector2 DetailScale = new Vector2(0.5f, 0.5f);
-	
+
 	// Cached variables used during painting
 	private static Texture2D  canvas;
 	private static int        canvasW;

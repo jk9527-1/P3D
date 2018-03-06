@@ -37,7 +37,7 @@
 				struct a2v
 				{
 					float4 vertex    : POSITION;
-					float2 texcoord0 : TEXCOORD0;
+					float2 texcoord0 : TEXCOORD1;
 				};
 				
 				struct v2f

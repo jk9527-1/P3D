@@ -20,12 +20,12 @@ public partial class P3D_Main
 	{
 		get
 		{
-			if (overrideTilingOffset == false && currentMaterial != null)
-			{
-				return currentMaterial.GetTextureScale(currentTexEnvName);
-			}
-			
-			return customTiling;
+			//if (overrideTilingOffset == false && currentMaterial != null)
+			//{
+			//	return currentMaterial.GetTextureScale(currentTexEnvName);
+			//}
+			//return customTiling;
+			return new Vector2(lockedRenderer.lightmapScaleOffset.x,lockedRenderer.lightmapScaleOffset.y);
 		}
 	}
 	
@@ -33,12 +33,12 @@ public partial class P3D_Main
 	{
 		get
 		{
-			if (overrideTilingOffset == false && currentMaterial != null)
-			{
-				return currentMaterial.GetTextureOffset(currentTexEnvName);
-			}
-			
-			return customOffset;
+			//if (overrideTilingOffset == false && currentMaterial != null)
+			//{
+			//	return currentMaterial.GetTextureOffset(currentTexEnvName);
+			//}
+			//return customOffset;
+			return new Vector2(lockedRenderer.lightmapScaleOffset.z, lockedRenderer.lightmapScaleOffset.w);
 		}
 	}
 	

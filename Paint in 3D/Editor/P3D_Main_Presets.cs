@@ -52,6 +52,13 @@ public partial class P3D_Main
 					currentBrush.Size         = presetBrush.Size;
 					currentBrush.Detail       = presetBrush.Detail;
 					currentBrush.DetailScale = presetBrush.DetailScale;
+
+					var images = Resources.LoadAll<Texture>("Shapes");
+					for(int index =0;index<images.Length;index++)
+					{
+						if(images[index] == presetBrush.Shape)
+							shapeSelected = index;
+					}
 				}
 			}
 		}

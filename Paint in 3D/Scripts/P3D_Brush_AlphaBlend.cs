@@ -23,7 +23,7 @@ public partial class P3D_Brush
 
 						if (shape != null) add *= shape.GetPixelBilinear(shapeCoord.x, shapeCoord.y);
 
-						if (detail != null) add *= SampleRepeat(detail, detailX * x, detailY * y);
+						//if (detail != null) add *= SampleRepeat(detail, detailX * x, detailY * y);
 								
 						canvas.SetPixel(x, y, Blend(old, add));
 					}

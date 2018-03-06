@@ -442,7 +442,10 @@ public static partial class P3D_Helper
 	
 	public static void SaveTextureAsset(Texture2D texture, string path, bool overwrite = false)
 	{
-		var bytes = texture.EncodeToPNG();
+		var newTexture = new Texture2D(texture.width,texture.height,TextureFormat.RGBAHalf,true);
+		newTexture.SetPixels32(texture.GetPixels32());
+		newTexture.Apply();
+		var bytes = newTexture.EncodeToEXR();
 		var fs    = new System.IO.FileStream(path, overwrite == true ? System.IO.FileMode.Create : System.IO.FileMode.CreateNew);
 		var bw    = new System.IO.BinaryWriter(fs);
 		
